@@ -1,0 +1,59 @@
+package com.jordanBoyce;
+
+import json.JSONException;
+import json.JSONInputStream;
+import json.JSONOutputStream;
+import json.ParseException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+
+@WebServlet(name = "HelloWorld", urlPatterns = {"/hello", "/Lamborghoni"})
+public class HelloWorld extends HttpServlet {
+    //When server responds to user
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("This is some random message!");
+
+        //Receive message from client
+        JSONInputStream inFromClient = new JSONInputStream(request.getInputStream());
+        //Respond to client
+        JSONOutputStream outToClient = new JSONOutputStream(response.getOutputStream());
+
+        HashMap<String, Object> dataMap = null;
+        try {
+            dataMap = (HashMap) inFromClient.readObject();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("Received:" + dataMap + " from Barney's client");
+        dataMap.put("status", "To Client");
+        try {
+            outToClient.writeObject(dataMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println("just sent "+dataMap);
+
+
+
+
+
+    }
+
+        // when the server receives a request
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("Do this before you go to the url!");
+        doPost(request, response);
+    }
+}
